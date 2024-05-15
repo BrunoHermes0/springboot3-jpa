@@ -13,6 +13,8 @@ import com.bruno.course.repositories.UserRepository;
 import com.bruno.course.services.exceptions.DatabaseException;
 import com.bruno.course.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
 
@@ -44,9 +46,13 @@ public class UserService {
 	}
 	
 	public User update(Long id, User obj) {
+		try {
 		User entity = userRepo.getReferenceById(id);
 		updateData(entity,obj);
 		return userRepo.save(entity);
+		} catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 
 	private void updateData(User entity, User obj) {
